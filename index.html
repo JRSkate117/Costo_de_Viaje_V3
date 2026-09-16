@@ -1,1 +1,108 @@
-<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111827"><meta name="description" content="Seguimiento GPS, ruta por calles, costo, historial y recibos"><link rel="manifest" href="manifest.json"><link rel="icon" href="icons/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="css/styles.css"><title>Costo de Viaje V3</title></head><body><div class="app"><header class="topbar"><div><h1>Costo de Viaje</h1><p id="status">Listo para iniciar</p></div><div class="top-actions"><button id="historyBtn" class="icon-btn">☷</button><button id="settingsBtn" class="icon-btn">⚙</button></div></header><main class="map-wrap"><div id="map"></div><div id="accuracyBadge" class="map-badge">GPS: esperando</div></main><section class="panel"><div class="route-grid"><label>Origen<div class="location-input"><input id="originInput" placeholder="Usar mi ubicación"><button id="originGpsBtn">GPS</button></div></label><label>Destino<div class="location-input"><input id="destinationInput" placeholder="Dirección o toca el mapa"><button id="destinationMapBtn">Mapa</button></div></label></div><div class="route-actions"><button id="routeBtn" class="secondary">Calcular ruta por calles</button><button id="clearRouteBtn" class="secondary">Limpiar ruta</button></div><div class="stats"><article><span>Ruta</span><strong id="routeDistance">—</strong></article><article><span>Recorrido GPS</span><strong id="distanceVal">0.00 km</strong></article><article><span>Tarifa</span><strong id="rateVal">$10.00/km</strong></article><article><span>Costo</span><strong id="costVal">$0.00</strong></article></div><div class="trip-info"><div><span>Tiempo</span><strong id="timeVal">00:00:00</strong></div><div><span>GPS</span><strong id="gpsVal">—</strong></div><div><span>Puntos</span><strong id="pointsVal">0</strong></div></div><div class="actions"><button id="startBtn" class="primary">Iniciar viaje</button><button id="pauseBtn" class="secondary" disabled>Pausar</button><button id="finishBtn" class="danger" disabled>Finalizar</button></div><button id="centerBtn" class="center-btn">Centrar en mi ubicación</button></section></div><dialog id="settingsDialog"><form method="dialog" class="dialog-card" id="settingsForm"><h2>Configuración</h2><label>Tarifa por km<input id="rateInput" type="number" min="0" step="0.01" value="10"></label><label>Precisión GPS máxima aceptada (m)<input id="accuracyInput" type="number" min="5" value="35"></label><label>Movimiento mínimo para registrar (m)<input id="minMoveInput" type="number" min="0" step="0.5" value="3"></label><label>Velocidad máxima para validar saltos (km/h)<input id="maxSpeedInput" type="number" min="20" value="180"></label><div class="dialog-actions"><button value="cancel" class="secondary">Cancelar</button><button value="default" class="primary">Guardar</button></div></form></dialog><dialog id="historyDialog"><div class="dialog-card wide"><div class="dialog-head"><h2>Historial</h2><button id="closeHistory" class="icon-btn">×</button></div><div id="historyList"></div><div class="dialog-actions"><button id="exportHistoryBtn" class="secondary">Exportar JSON</button><button id="clearHistoryBtn" class="danger">Borrar historial</button></div></div></dialog><dialog id="summaryDialog"><div class="dialog-card"><h2>Viaje finalizado</h2><div id="summaryContent"></div><div class="dialog-actions"><button id="receiptBtn" class="secondary">Ver recibo</button><button id="newTripBtn" class="primary">Nuevo viaje</button></div></div></dialog><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/app.js"></script></body></html>
+<!doctype html>
+<html lang="es-MX">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+        <meta name="theme-color" content="#111827">
+        <meta name="description" content="Seguimiento GPS, ruta por calles, costo, historial y recibos">
+        <link rel="manifest" href="manifest.json">
+        <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+        <link rel="stylesheet" href="css/styles.css">
+        <title>Costo de Viaje V3</title>
+    </head>
+    <body>
+        <div class="app">
+            <header class="topbar">
+                <div>
+                    <h1>Costo de Viaje</h1>
+                    <p id="status">Listo para iniciar</p>
+                </div>
+                <div class="top-actions">
+                    <button id="historyBtn" class="icon-btn">☷</button>
+                    <button id="settingsBtn" class="icon-btn">⚙</button>
+                </div>
+            </header>
+
+            <main class="map-wrap">
+                <div id="map"></div>
+                <div id="accuracyBadge" class="map-badge">GPS: esperando</div>
+            </main>
+            <section class="panel">
+                <div class="route-grid">
+                    <label>Origen<div class="location-input">
+                        <input id="originInput" placeholder="Usar mi ubicación"><button id="originGpsBtn">GPS</button></div>
+                    </label>
+                    <label>Destino<div class="location-input"><input id="destinationInput" placeholder="Dirección o toca el mapa"><button id="destinationMapBtn">Mapa</button></div></label>
+                </div>
+                <div class="route-actions">
+                    <button id="routeBtn" class="secondary">Calcular ruta por calles</button>
+                    <button id="clearRouteBtn" class="secondary">Limpiar ruta</button>
+                </div>
+                <div class="stats">
+                    <article>
+                        <span>Ruta</span><strong id="routeDistance">—</strong>
+                    </article>
+
+                    <article>
+                        <span>Recorrido GPS</span><strong id="distanceVal">0.00 km</strong>
+                    </article>
+                    <article>
+                        <span>Tarifa</span><strong id="rateVal">$10.00/km</strong>
+                    </article>
+                    <article>
+                        <span>Costo</span><strong id="costVal">$0.00</strong>
+                    </article>
+                </div>
+                <div class="trip-info">
+                    <div><span>Tiempo</span><strong id="timeVal">00:00:00</strong></div>
+                    <div><span>GPS</span><strong id="gpsVal">—</strong></div>
+                    <div><span>Puntos</span><strong id="pointsVal">0</strong></div>
+                </div>
+                <div class="actions">
+                    <button id="startBtn" class="primary">Iniciar viaje</button>
+                    <button id="pauseBtn" class="secondary" disabled>Pausar</button>
+                    <button id="finishBtn" class="danger" disabled>Finalizar</button>
+                </div>
+                <button id="centerBtn" class="center-btn">Centrar en mi ubicación</button>
+            </section>
+        </div>
+        <dialog id="settingsDialog">
+            <form method="dialog" class="dialog-card" id="settingsForm">
+                <h2>Configuración</h2>
+                <label>Tarifa por km<input id="rateInput" type="number" min="0" step="0.01" value="10"></label>
+                <label>Precisión GPS máxima aceptada (m)<input id="accuracyInput" type="number" min="5" value="35"></label>
+                <label>Movimiento mínimo para registrar (m)<input id="minMoveInput" type="number" min="0" step="0.5" value="3"></label>
+                <label>Velocidad máxima para validar saltos (km/h)<input id="maxSpeedInput" type="number" min="20" value="180"></label>
+                <div class="dialog-actions">
+                    <button value="cancel" class="secondary">Cancelar</button>
+                    <button value="default" class="primary">Guardar</button>
+                </div>
+            </form>
+        </dialog>
+        <dialog id="historyDialog">
+            <div class="dialog-card wide">
+                <div class="dialog-head"><h2>Historial</h2>
+                    <button id="closeHistory" class="icon-btn">×</button>
+                </div>
+                <div id="historyList"></div>
+                <div class="dialog-actions">
+                    <button id="exportHistoryBtn" class="secondary">Exportar JSON</button>
+                    <button id="clearHistoryBtn" class="danger">Borrar historial</button>
+                </div>
+            </div>
+        </dialog>
+        <dialog id="summaryDialog">
+            <div class="dialog-card"><h2>Viaje finalizado</h2>
+                <div id="summaryContent"></div>
+                <div class="dialog-actions">
+                    <button id="receiptBtn" class="secondary">Ver recibo</button>
+                    <button id="newTripBtn" class="primary">Nuevo viaje</button>
+                </div>
+            </div>
+        </dialog>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>
